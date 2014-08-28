@@ -56,6 +56,10 @@ class MajorTick(setting.Line):
                                     descr = _('List of tick values'
                                               ' overriding defaults'),
                                     usertext= _('Manual ticks') ) )
+        self.add( setting.FloatList('suppressTicks',
+                                    [],
+                                    descr = _('List of tick values to supress'),
+                                    usertext= _('Suppress ticks') ) )
 
     def getLength(self, painter):
         '''Return tick length in painter coordinates'''
@@ -487,6 +491,13 @@ class Axis(widget.Widget):
                 if i >= self.plottedrange[0] and i <= self.plottedrange[1]:
                     ticks.append(i)
             self.majortickscalc = N.array(ticks)
+
+        # remove values if requested
+        if len(s.MajorTicks.suppressTicks) > 0:
+            ticks = list(self.majortickscalc)
+            for i in s.MajorTicks.suppressTicks:
+                if i in ticks: ticks.remove(i)
+            self.majortickscalc = N.array(ticks)                
 
     def getPlottedRange(self):
         """Return the range plotted by the axes."""
